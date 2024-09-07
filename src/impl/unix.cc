@@ -301,7 +301,7 @@ Serial::SerialImpl::reconfigurePort ()
 
         struct termios2 tio2;
 
-        if (-1 != ioctl(fd, TCGETS2, &tio2))
+        if (-1 != ioctl(fd_, TCGETS2, &tio2))
         {
             tio2.c_cflag &= ~CBAUD; // remove current baud rate
             tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
@@ -309,7 +309,7 @@ Serial::SerialImpl::reconfigurePort ()
             tio2.c_ispeed = baudRate; // set the input baud rate
             tio2.c_ospeed = baudRate; // set the output baud rate
 
-            if (-1 == ioctl(fd, TCSETS2, &tio2))
+            if (-1 == ioctl(fd_, TCSETS2, &tio2))
             {
                 THROW (IOException, errno)
                 return -1;
