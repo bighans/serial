@@ -53,14 +53,15 @@ include_directories(include)
 
 ## Install executable
 install(TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+    ARCHIVE DESTINATION /usr/local/lib
+    LIBRARY DESTINATION /usr/local/lib
+    RUNTIME DESTINATION .
 )
 
 ## Install headers
 install(FILES include/serial/serial.h include/serial/v8stdint.h
-  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/serial)
+  DESTINATION /usr/local/include/serial
+)
 
 ## Tests
 if(CATKIN_ENABLE_TESTING)

@@ -184,135 +184,6 @@ Serial::SerialImpl::reconfigurePort ()
   options.c_iflag &= (tcflag_t) ~PARMRK;
 #endif
 
-  // setup baud rate
-  bool custom_baud = false;
-  speed_t baud;
-  switch (baudrate_) {
-#ifdef B0
-  case 0: baud = B0; break;
-#endif
-#ifdef B50
-  case 50: baud = B50; break;
-#endif
-#ifdef B75
-  case 75: baud = B75; break;
-#endif
-#ifdef B110
-  case 110: baud = B110; break;
-#endif
-#ifdef B134
-  case 134: baud = B134; break;
-#endif
-#ifdef B150
-  case 150: baud = B150; break;
-#endif
-#ifdef B200
-  case 200: baud = B200; break;
-#endif
-#ifdef B300
-  case 300: baud = B300; break;
-#endif
-#ifdef B600
-  case 600: baud = B600; break;
-#endif
-#ifdef B1200
-  case 1200: baud = B1200; break;
-#endif
-#ifdef B1800
-  case 1800: baud = B1800; break;
-#endif
-#ifdef B2400
-  case 2400: baud = B2400; break;
-#endif
-#ifdef B4800
-  case 4800: baud = B4800; break;
-#endif
-#ifdef B7200
-  case 7200: baud = B7200; break;
-#endif
-#ifdef B9600
-  case 9600: baud = B9600; break;
-#endif
-#ifdef B14400
-  case 14400: baud = B14400; break;
-#endif
-#ifdef B19200
-  case 19200: baud = B19200; break;
-#endif
-#ifdef B28800
-  case 28800: baud = B28800; break;
-#endif
-#ifdef B57600
-  case 57600: baud = B57600; break;
-#endif
-#ifdef B76800
-  case 76800: baud = B76800; break;
-#endif
-#ifdef B38400
-  case 38400: baud = B38400; break;
-#endif
-#ifdef B115200
-  case 115200: baud = B115200; break;
-#endif
-#ifdef B128000
-  case 128000: baud = B128000; break;
-#endif
-#ifdef B153600
-  case 153600: baud = B153600; break;
-#endif
-#ifdef B230400
-  case 230400: baud = B230400; break;
-#endif
-#ifdef B256000
-  case 256000: baud = B256000; break;
-#endif
-#ifdef B460800
-  case 460800: baud = B460800; break;
-#endif
-#ifdef B500000
-  case 500000: baud = B500000; break;
-#endif
-#ifdef B576000
-  case 576000: baud = B576000; break;
-#endif
-#ifdef B921600
-  case 921600: baud = B921600; break;
-#endif
-#ifdef B1000000
-  case 1000000: baud = B1000000; break;
-#endif
-#ifdef B1152000
-  case 1152000: baud = B1152000; break;
-#endif
-#ifdef B1500000
-  case 1500000: baud = B1500000; break;
-#endif
-#ifdef B2000000
-  case 2000000: baud = B2000000; break;
-#endif
-#ifdef B2500000
-  case 2500000: baud = B2500000; break;
-#endif
-#ifdef B3000000
-  case 3000000: baud = B3000000; break;
-#endif
-#ifdef B3500000
-  case 3500000: baud = B3500000; break;
-#endif
-#ifdef B4000000
-  case 4000000: baud = B4000000; break;
-#endif
-  default:
-    custom_baud = true;
-  }
-  if (custom_baud == false) {
-#ifdef _BSD_SOURCE
-    ::cfsetspeed(&options, baud);
-#else
-    ::cfsetispeed(&options, baud);
-    ::cfsetospeed(&options, baud);
-#endif
-  }
 
   // setup char len
   options.c_cflag &= (tcflag_t) ~CSIZE;
@@ -414,7 +285,6 @@ Serial::SerialImpl::reconfigurePort ()
   ::tcsetattr (fd_, TCSANOW, &options);
 
   // apply custom baud rate, if any
-  if (custom_baud == true) {
     // OS X support
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
     // Starting with Tiger, the IOSSIOSPEED ioctl can be used to set arbitrary baud rates
@@ -428,25 +298,32 @@ Serial::SerialImpl::reconfigurePort ()
     }
     // Linux Support
 #elif defined(__linux__) && defined (TIOCSSERIAL)
-    struct serial_struct ser;
 
-    if (-1 == ioctl (fd_, TIOCGSERIAL, &ser)) {
-      THROW (IOException, errno);
-    }
+        struct termios2 tio2;
 
-    // set custom divisor
-    ser.custom_divisor = ser.baud_base / static_cast<int> (baudrate_);
-    // update flags
-    ser.flags &= ~ASYNC_SPD_MASK;
-    ser.flags |= ASYNC_SPD_CUST;
+        if (-1 != ioctl(fd, TCGETS2, &tio2))
+        {
+            tio2.c_cflag &= ~CBAUD; // remove current baud rate
+            tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
 
-    if (-1 == ioctl (fd_, TIOCSSERIAL, &ser)) {
-      THROW (IOException, errno);
-    }
+            tio2.c_ispeed = baudRate; // set the input baud rate
+            tio2.c_ospeed = baudRate; // set the output baud rate
+
+            if (-1 == ioctl(fd, TCSETS2, &tio2))
+            {
+                THROW (IOException, errno)
+                return -1;
+            }
+        }
+        else
+        {
+            THROW (IOException, errno)
+            return -1;
+        }
 #else
     throw invalid_argument ("OS does not currently support custom bauds");
 #endif
-  }
+
 
   // Update byte_time_ based on the new settings.
   uint32_t bit_time_ns = 1e9 / baudrate_;
