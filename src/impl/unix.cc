@@ -329,8 +329,8 @@ Serial::SerialImpl::reconfigurePort ()
             tio2.c_cflag &= ~CBAUD; // remove current baud rate
             tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
 
-            tio2.c_ispeed = baudRate_; // set the input baud rate
-            tio2.c_ospeed = baudRate_; // set the output baud rate
+            tio2.c_ispeed = baudrate_; // set the input baud rate
+            tio2.c_ospeed = baudrate_; // set the output baud rate
 
             if (-1 == ioctl(fd_, TCSETS2, &tio2))
             {
