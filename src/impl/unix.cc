@@ -330,14 +330,12 @@ Serial::SerialImpl::reconfigurePort ()
 
             if (-1 == ioctl(fd_, TCSETS2, &tio2))
             {
-                THROW (IOException, errno)
-                return -1;
+                THROW (IOException, errno);
             }
         }
         else
         {
-            THROW (IOException, errno)
-            return -1;
+            THROW (IOException, errno);
         }
 #else
     throw invalid_argument ("OS does not currently support custom bauds");
