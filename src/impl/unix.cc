@@ -311,6 +311,10 @@ Serial::SerialImpl::reconfigurePort ()
     // Linux Support
 #elif defined(__linux__) && defined (TIOCSSERIAL)
 
+		#ifndef BOTHER
+		#define BOTHER 0010000
+		#endif
+
         #ifndef TCGETS2
         #define TCGETS2 _IOR('T', 0x2A, struct termios2)
         #endif
@@ -325,8 +329,8 @@ Serial::SerialImpl::reconfigurePort ()
             tio2.c_cflag &= ~CBAUD; // remove current baud rate
             tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
 
-            tio2.c_ispeed = baudRate; // set the input baud rate
-            tio2.c_ospeed = baudRate; // set the output baud rate
+            tio2.c_ispeed = baudRate_; // set the input baud rate
+            tio2.c_ospeed = baudRate_; // set the output baud rate
 
             if (-1 == ioctl(fd_, TCSETS2, &tio2))
             {
@@ -652,22 +656,19 @@ Serial::SerialImpl::setBytesize (serial::bytesize_t bytesize)
     reconfigurePort ();
 }
 
-serial::bytesize_t
-Serial::SerialImpl::getBytesize () const
+serial::bytesize_t Serial::SerialImpl::getBytesize () const
 {
   return bytesize_;
 }
 
-void
-Serial::SerialImpl::setParity (serial::parity_t parity)
+void Serial::SerialImpl::setParity (serial::parity_t parity)
 {
   parity_ = parity;
   if (is_open_)
     reconfigurePort ();
 }
 
-serial::parity_t
-Serial::SerialImpl::getParity () const
+serial::parity_t Serial::SerialImpl::getParity () const
 {
   return parity_;
 }
