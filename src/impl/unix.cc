@@ -15,7 +15,7 @@
 #include <errno.h>
 #include <paths.h>
 #include <sysexits.h>
-#include <termios.h>
+// #include <termios.h>
 #include <sys/param.h>
 #include <pthread.h>
 
