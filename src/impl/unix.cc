@@ -299,6 +299,13 @@ Serial::SerialImpl::reconfigurePort ()
     // Linux Support
 #elif defined(__linux__) && defined (TIOCSSERIAL)
 
+        #ifndef TCGETS2
+        #define TCGETS2 _IOR('T', 0x2A, struct termios2)
+        #endif
+
+        #ifndef TCSETS2
+        #define TCSETS2 _IOW('T', 0x2B, struct termios2)
+        #endif
         struct termios2 tio2;
 
         if (-1 != ioctl(fd_, TCGETS2, &tio2))
