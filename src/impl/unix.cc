@@ -21,7 +21,7 @@
 
 #if defined(__linux__)
 # include <linux/serial.h>
-#include <termbits.h>
+#include <asm/termbits.h>
 #endif
 
 #include <sys/select.h>
