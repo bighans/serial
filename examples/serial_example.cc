@@ -93,7 +93,7 @@ int run(int argc, char **argv)
 #endif
 
   // port, baudrate, timeout in milliseconds
-  serial::Serial my_serial(port, baud, serial::Timeout::simpleTimeout(1000));
+  serial::Serial my_serial(port, baud, serial::Timeout::simpleTimeout(1000),serial::sevenbits,serial::parity_even);
 
   cout << "Is the serial port open?";
   if(my_serial.isOpen())
