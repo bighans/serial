@@ -163,7 +163,6 @@ Serial::SerialImpl::open ()
       THROW (IOException, errno);
     }
   }
-
   reconfigurePort();
   is_open_ = true;
 }
@@ -622,34 +621,29 @@ Serial::SerialImpl::getPort () const
   return port_;
 }
 
-void
-Serial::SerialImpl::setTimeout (serial::Timeout &timeout)
+void Serial::SerialImpl::setTimeout (serial::Timeout &timeout)
 {
   timeout_ = timeout;
 }
 
-serial::Timeout
-Serial::SerialImpl::getTimeout () const
+serial::Timeout Serial::SerialImpl::getTimeout () const
 {
   return timeout_;
 }
 
-void
-Serial::SerialImpl::setBaudrate (unsigned long baudrate)
+void Serial::SerialImpl::setBaudrate (unsigned long baudrate)
 {
   baudrate_ = baudrate;
   if (is_open_)
     reconfigurePort ();
 }
 
-unsigned long
-Serial::SerialImpl::getBaudrate () const
+unsigned long Serial::SerialImpl::getBaudrate () const
 {
   return baudrate_;
 }
 
-void
-Serial::SerialImpl::setBytesize (serial::bytesize_t bytesize)
+void Serial::SerialImpl::setBytesize (serial::bytesize_t bytesize)
 {
   bytesize_ = bytesize;
   if (is_open_)
@@ -673,36 +667,31 @@ serial::parity_t Serial::SerialImpl::getParity () const
   return parity_;
 }
 
-void
-Serial::SerialImpl::setStopbits (serial::stopbits_t stopbits)
+void Serial::SerialImpl::setStopbits (serial::stopbits_t stopbits)
 {
   stopbits_ = stopbits;
   if (is_open_)
     reconfigurePort ();
 }
 
-serial::stopbits_t
-Serial::SerialImpl::getStopbits () const
+serial::stopbits_t Serial::SerialImpl::getStopbits () const
 {
   return stopbits_;
 }
 
-void
-Serial::SerialImpl::setFlowcontrol (serial::flowcontrol_t flowcontrol)
+void Serial::SerialImpl::setFlowcontrol (serial::flowcontrol_t flowcontrol)
 {
   flowcontrol_ = flowcontrol;
   if (is_open_)
     reconfigurePort ();
 }
 
-serial::flowcontrol_t
-Serial::SerialImpl::getFlowcontrol () const
+serial::flowcontrol_t Serial::SerialImpl::getFlowcontrol () const
 {
   return flowcontrol_;
 }
 
-void
-Serial::SerialImpl::flush ()
+void Serial::SerialImpl::flush ()
 {
   if (is_open_ == false) {
     throw PortNotOpenedException ("Serial::flush");
@@ -710,8 +699,7 @@ Serial::SerialImpl::flush ()
   tcdrain (fd_);
 }
 
-void
-Serial::SerialImpl::flushInput ()
+void Serial::SerialImpl::flushInput ()
 {
   if (is_open_ == false) {
     throw PortNotOpenedException ("Serial::flushInput");
@@ -719,8 +707,7 @@ Serial::SerialImpl::flushInput ()
   tcflush (fd_, TCIFLUSH);
 }
 
-void
-Serial::SerialImpl::flushOutput ()
+void Serial::SerialImpl::flushOutput ()
 {
   if (is_open_ == false) {
     throw PortNotOpenedException ("Serial::flushOutput");
@@ -728,8 +715,7 @@ Serial::SerialImpl::flushOutput ()
   tcflush (fd_, TCOFLUSH);
 }
 
-void
-Serial::SerialImpl::sendBreak (int duration)
+void Serial::SerialImpl::sendBreak (int duration)
 {
   if (is_open_ == false) {
     throw PortNotOpenedException ("Serial::sendBreak");
