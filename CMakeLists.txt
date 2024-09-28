@@ -26,7 +26,8 @@ if(APPLE)
 elseif(UNIX)
     # If unix
     list(APPEND serial_SRCS src/impl/unix.cc)
-    list(APPEND serial_SRCS src/impl/list_ports/list_ports_linux.cc)
+    list(APPEND serial_SRCS src/impl/list_ports/list_ports_linux.cc src/Pico/termios2.c)
+	
 else()
     # If windows
     list(APPEND serial_SRCS src/impl/win.cc)
@@ -49,7 +50,7 @@ add_dependencies(serial_example ${PROJECT_NAME})
 target_link_libraries(serial_example ${PROJECT_NAME})
 
 ## Include headers
-include_directories(include)
+include_directories(include src/Pico)
 
 ## Install executable
 install(TARGETS ${PROJECT_NAME}
