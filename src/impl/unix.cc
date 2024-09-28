@@ -20,8 +20,8 @@
 #include <pthread.h>
 
 #if defined(__linux__)
-	#include CUSTOM_BAUD_HEAD
-	#pragma info "using Linux"
+	#include "Pico/custbaud.h"
+	#pragma message "using Linux"
 #else
 	#include <termios.h>
 #endif
@@ -301,36 +301,13 @@ Serial::SerialImpl::reconfigurePort ()
     // Linux Support
 #elif defined(__linux__) && defined (TIOCSSERIAL)
 
-		#ifndef BOTHER
-		#define BOTHER 0010000
-		#endif
+        struct termios tio2;
+		if(-1==cfsetispeed(&tio2,baudrate_))
+		    THROW (IOException, errno);
 
-        #ifndef TCGETS2
-        #define TCGETS2 _IOR('T', 0x2A, struct termios2)
-        #endif
+		if(-1==cfsetospeed(&tio2,baudrate_))
+			THROW (IOException, errno);
 
-        #ifndef TCSETS2
-        #define TCSETS2 _IOW('T', 0x2B, struct termios2)
-        #endif
-        struct termios2 tio2;
-
-        if (-1 != ioctl(fd_, TCGETS2, &tio2))
-        {
-            tio2.c_cflag &= ~CBAUD; // remove current baud rate
-            tio2.c_cflag |= BOTHER; // allow custom baud rate using int input
-
-            tio2.c_ispeed = baudrate_; // set the input baud rate
-            tio2.c_ospeed = baudrate_; // set the output baud rate
-
-            if (-1 == ioctl(fd_, TCSETS2, &tio2))
-            {
-                THROW (IOException, errno);
-            }
-        }
-        else
-        {
-            THROW (IOException, errno);
-        }
 #else
     throw invalid_argument ("OS does not currently support custom bauds");
 #endif

@@ -50,7 +50,7 @@ add_dependencies(serial_example ${PROJECT_NAME})
 target_link_libraries(serial_example ${PROJECT_NAME})
 
 ## Include headers
-include_directories(include src/Pico)
+include_directories(include src)
 
 ## Install executable
 install(TARGETS ${PROJECT_NAME}
