@@ -13,6 +13,7 @@ if(UNIX AND NOT APPLE)
     set(pthread_LIBRARIES pthread)
 endif()
 
+
 ## Sources
 set(serial_SRCS
     src/serial.cc
@@ -25,14 +26,14 @@ if(APPLE)
     list(APPEND serial_SRCS src/impl/list_ports/list_ports_osx.cc)
 elseif(UNIX)
     # If unix
-    list(APPEND serial_SRCS src/impl/unix.cc)
-    list(APPEND serial_SRCS src/impl/list_ports/list_ports_linux.cc src/Pico/termios2.c)
-	
+    list(APPEND serial_SRCS src/impl/unix.cc src/impl/setBaudRate.cc)
+    list(APPEND serial_SRCS src/impl/list_ports/list_ports_linux.cc )
 else()
     # If windows
     list(APPEND serial_SRCS src/impl/win.cc)
     list(APPEND serial_SRCS src/impl/list_ports/list_ports_win.cc)
 endif()
+
 
 ## Add serial library
 add_library(${PROJECT_NAME} ${serial_SRCS})

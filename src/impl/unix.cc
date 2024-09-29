@@ -15,12 +15,12 @@
 #include <errno.h>
 #include <paths.h>
 #include <sysexits.h>
-#include <termios.h>
 #include <sys/param.h>
 #include <pthread.h>
+#include <termios.h>
 
 #if defined(__linux__)
-	#include "Pico/custbaud.h"
+	#include "serial/impl/setBaudRate.h"
 	#pragma message "using Linux"
 #else
 	#include <termios.h>
@@ -301,12 +301,7 @@ Serial::SerialImpl::reconfigurePort ()
     // Linux Support
 #elif defined(__linux__) && defined (TIOCSSERIAL)
 
-        struct termios tio2;
-		if(-1==cfsetispeed(&tio2,baudrate_))
-		    THROW (IOException, errno);
-
-		if(-1==cfsetospeed(&tio2,baudrate_))
-			THROW (IOException, errno);
+       setBaudRate(fd_,baudrate_);
 
 #else
     throw invalid_argument ("OS does not currently support custom bauds");
